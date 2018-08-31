@@ -1,18 +1,27 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
-	"io/ioutil"
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+
+	"github.com/spf13/viper"
 )
 
 func main() {
+	viper.AutomaticEnv()
+	viper.SetDefault("port", "80")
+	viper.SetEnvPrefix("slackproxy")
+	port := viper.GetString("port")
+	host := viper.GetString("host")
+
 	http.HandleFunc("/", handler)
-	fmt.Printf("Listen: :8808\n")
-	err := http.ListenAndServe(":8808", nil)
+	fmt.Printf("Listen: %s:%s\n", host, port)
+
+	err := http.ListenAndServe(fmt.Sprintf("%s:%s", host, port), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
